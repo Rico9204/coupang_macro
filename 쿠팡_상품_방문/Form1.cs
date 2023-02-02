@@ -319,10 +319,10 @@ namespace 쿠팡_상품_방문
 										End_Scroll(driver);
 										for (int k = 0; k < 15; k++)
 										{
-											if (driver.FindElements(By.CssSelector("[id='productList'] [data-item-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "']")).Count > 0)
+											if (driver.FindElements(By.CssSelector("[id='productList'] [data-product-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "']")).Count > 0)
 											{
 												Invoke(method, "상품을 찾았습니다.");
-												driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [data-item-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "'] [class='name']")));
+												driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "'] [class='name']")));
 												Thread.Sleep(10000);
 												driver.Close();
 												driver.SwitchTo().Window(driver.WindowHandles.Last());
@@ -372,10 +372,10 @@ namespace 쿠팡_상품_방문
 										driver.ExecuteScript("window.scrollBy(0, 1000)");
 										for (int l = 0; l < 15; l++)
 										{
-											if (driver.FindElements(By.CssSelector("[id='productList'] [data-item-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "']")).Count > 0)
+											if (driver.FindElements(By.CssSelector("[id='productList'] [data-product-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "']")).Count > 0)
 											{
 												Invoke(method, "상품을 찾았습니다.");
-												driver.FindElement(By.CssSelector("[id='productList'] [data-item-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "']")).Click();
+												driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "']")).Click();
 												Thread.Sleep(10000);
 												driver.Close();
 												driver.SwitchTo().Window(driver.WindowHandles.Last());
