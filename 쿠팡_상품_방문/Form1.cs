@@ -128,9 +128,9 @@ namespace 쿠팡_상품_방문
 			StreamWriter streamWriter = new StreamWriter(fileStream, Encoding.Default);
 			for (int i = 0; i < 계정데이터.Rows.Count - 1; i++)
 			{
-				if (Convert.ToString(계정데이터.Rows[i].Cells[1].Value) != "" && Convert.ToString(계정데이터.Rows[i].Cells[2].Value) != "")
+                if (계정데이터.Rows[i].Cells[1].Value.ToString() != "" && 계정데이터.Rows[i].Cells[2].Value.ToString() != "")
 				{
-					streamWriter.WriteLine(Convert.ToString(계정데이터.Rows[i].Cells[1].Value) + "\t" + Convert.ToString(계정데이터.Rows[i].Cells[2].Value));
+                    streamWriter.WriteLine(계정데이터.Rows[i].Cells[1].Value.ToString() + "\t" + 계정데이터.Rows[i].Cells[2].Value.ToString());
 				}
 			}
 			streamWriter.Close();
@@ -148,7 +148,7 @@ namespace 쿠팡_상품_방문
 			{
 				return;
 			}
-			string[] array = File.ReadAllLines(Convert.ToString(openFileDialog.FileName), Encoding.Default);
+            string[] array = File.ReadAllLines(openFileDialog.FileName, Encoding.Default);
 			for (int i = 0; i < array.Count(); i++)
 			{
 				if (array[i] != "")
@@ -176,9 +176,9 @@ namespace 쿠팡_상품_방문
 			StreamWriter streamWriter = new StreamWriter(fileStream, Encoding.Default);
 			for (int i = 0; i < 작업데이터.Rows.Count - 1; i++)
 			{
-				if (Convert.ToString(작업데이터.Rows[i].Cells[1].Value) != "" && Convert.ToString(작업데이터.Rows[i].Cells[2].Value) != "")
+                if (작업데이터.Rows[i].Cells[1].Value.ToString() != "" && 작업데이터.Rows[i].Cells[2].Value.ToString() != "")
 				{
-					streamWriter.WriteLine(Convert.ToString(작업데이터.Rows[i].Cells[1].Value) + "\t" + Convert.ToString(작업데이터.Rows[i].Cells[2].Value));
+                    streamWriter.WriteLine(작업데이터.Rows[i].Cells[1].Value.ToString() + "\t" + 작업데이터.Rows[i].Cells[2].Value.ToString());
 				}
 			}
 			streamWriter.Close();
@@ -196,7 +196,7 @@ namespace 쿠팡_상품_방문
 			{
 				return;
 			}
-			string[] array = File.ReadAllLines(Convert.ToString(openFileDialog.FileName), Encoding.Default);
+            string[] array = File.ReadAllLines(openFileDialog.FileName, Encoding.Default);
 			for (int i = 0; i < array.Count(); i++)
 			{
 				if (array[i] != "")
@@ -302,6 +302,7 @@ namespace 쿠팡_상품_방문
 						{
 							for (int j = 0; j < 작업데이터.Rows.Count - 1; j++)
 							{
+                        var currentRow = 작업데이터.Rows[j];
 								Invoke(method, j + 1 + "번 상품을 찾습니다.");
 								try
 								{
@@ -309,20 +310,20 @@ namespace 쿠팡_상품_방문
 									{
 										driver.Navigate().GoToUrl("http://www.coupang.com/");
 									}
-									if (Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Contains("검색:"))
+                            if (currentRow.Cells[1].Value.ToString().Contains("검색:"))
 									{
 										driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")).Click();
 										Thread.Sleep(1000);
-										driver.ExecuteScript("arguments[0].value=arguments[1]", driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")), Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { "검색:" }, StringSplitOptions.None)[1]);
+                                driver.ExecuteScript("arguments[0].value=arguments[1]", driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")), currentRow.Cells[1].Value.ToString().Split(new string[1] { "검색:" }, StringSplitOptions.None)[1]);
 										driver.FindElement(By.CssSelector("[id='headerSearchBtn']")).Click();
 										Thread.Sleep(3000);
 										End_Scroll(driver);
 										for (int k = 0; k < 15; k++)
 										{
-											if (driver.FindElements(By.CssSelector("[id='productList'] [data-product-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "']")).Count > 0)
+                                    if (driver.FindElements(By.CssSelector($"[id='productList'] [data-product-id='{currentRow.Cells[2].Value.ToString()}']")).Count > 0)
 											{
 												Invoke(method, "상품을 찾았습니다.");
-												driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "'] [class='name']")));
+                                        driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "'] [class='name']")));
 												Thread.Sleep(10000);
 												driver.Close();
 												driver.SwitchTo().Window(driver.WindowHandles.Last());
@@ -349,33 +350,33 @@ namespace 쿠팡_상품_방문
 									else
 									{
 										new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class^='category-btn']"))).Perform();
-										if (Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 2)
+                                if (currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 2)
 										{
-											new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
-											driver.FindElement(By.CssSelector("[href='/np/categories/" + Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']")).Click();
+                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
+                                    driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']")).Click();
 										}
-										else if (Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 3)
+                                else if (currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 3)
 										{
-											new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
-											new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[href='/np/categories/" + Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']"))).Perform();
-											driver.FindElement(By.CssSelector("[href='/np/categories/" + Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None)[2] + "']")).Click();
+                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
+                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']"))).Perform();
+                                    driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[2] + "']")).Click();
 										}
-										else if (Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 4)
+                                else if (currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 4)
 										{
-											new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
-											new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[href='/np/categories/" + Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']"))).Perform();
-											driver.FindElement(By.CssSelector("[href='/np/categories/" + Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None)[2] + "']")).Click();
+                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
+                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']"))).Perform();
+                                    driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[2] + "']")).Click();
 											Thread.Sleep(1000);
-											driver.FindElement(By.CssSelector("label[for='component" + Convert.ToString(작업데이터.Rows[j].Cells[1].Value).Split(new string[1] { ";" }, StringSplitOptions.None).Last() + "']")).Click();
+                                    driver.FindElement(By.CssSelector("label[for='component" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Last() + "']")).Click();
 										}
 										Thread.Sleep(1000);
 										driver.ExecuteScript("window.scrollBy(0, 1000)");
 										for (int l = 0; l < 15; l++)
 										{
-											if (driver.FindElements(By.CssSelector("[id='productList'] [data-product-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "']")).Count > 0)
+                                    if (driver.FindElements(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "']")).Count > 0)
 											{
 												Invoke(method, "상품을 찾았습니다.");
-												driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + Convert.ToString(작업데이터.Rows[j].Cells[2].Value) + "']")).Click();
+                                        driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "']")).Click();
 												Thread.Sleep(10000);
 												driver.Close();
 												driver.SwitchTo().Window(driver.WindowHandles.Last());
