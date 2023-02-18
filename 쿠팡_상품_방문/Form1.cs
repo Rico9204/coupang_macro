@@ -128,9 +128,9 @@ namespace 쿠팡_상품_방문
 			StreamWriter streamWriter = new StreamWriter(fileStream, Encoding.Default);
 			for (int i = 0; i < 계정데이터.Rows.Count - 1; i++)
 			{
-                if (계정데이터.Rows[i].Cells[1].Value.ToString() != "" && 계정데이터.Rows[i].Cells[2].Value.ToString() != "")
+				if (계정데이터.Rows[i].Cells[1].Value.ToString() != "" && 계정데이터.Rows[i].Cells[2].Value.ToString() != "")
 				{
-                    streamWriter.WriteLine(계정데이터.Rows[i].Cells[1].Value.ToString() + "\t" + 계정데이터.Rows[i].Cells[2].Value.ToString());
+					streamWriter.WriteLine(계정데이터.Rows[i].Cells[1].Value.ToString() + "\t" + 계정데이터.Rows[i].Cells[2].Value.ToString());
 				}
 			}
 			streamWriter.Close();
@@ -148,7 +148,7 @@ namespace 쿠팡_상품_방문
 			{
 				return;
 			}
-            string[] array = File.ReadAllLines(openFileDialog.FileName, Encoding.Default);
+			string[] array = File.ReadAllLines(openFileDialog.FileName, Encoding.Default);
 			for (int i = 0; i < array.Count(); i++)
 			{
 				if (array[i] != "")
@@ -176,9 +176,9 @@ namespace 쿠팡_상품_방문
 			StreamWriter streamWriter = new StreamWriter(fileStream, Encoding.Default);
 			for (int i = 0; i < 작업데이터.Rows.Count - 1; i++)
 			{
-                if (작업데이터.Rows[i].Cells[1].Value.ToString() != "" && 작업데이터.Rows[i].Cells[2].Value.ToString() != "")
+				if (작업데이터.Rows[i].Cells[1].Value.ToString() != "" && 작업데이터.Rows[i].Cells[2].Value.ToString() != "")
 				{
-                    streamWriter.WriteLine(작업데이터.Rows[i].Cells[1].Value.ToString() + "\t" + 작업데이터.Rows[i].Cells[2].Value.ToString());
+					streamWriter.WriteLine(작업데이터.Rows[i].Cells[1].Value.ToString() + "\t" + 작업데이터.Rows[i].Cells[2].Value.ToString());
 				}
 			}
 			streamWriter.Close();
@@ -196,7 +196,7 @@ namespace 쿠팡_상품_방문
 			{
 				return;
 			}
-            string[] array = File.ReadAllLines(openFileDialog.FileName, Encoding.Default);
+			string[] array = File.ReadAllLines(openFileDialog.FileName, Encoding.Default);
 			for (int i = 0; i < array.Count(); i++)
 			{
 				if (array[i] != "")
@@ -288,12 +288,13 @@ namespace 쿠팡_상품_방문
 			{
 				for (int i = 0; i < 계정데이터.Rows.Count - 1; i++)
 				{
+					var currentAccount = 계정데이터.Rows[i];
 					Invoke(method, i + 1 + "번 계정으로 작업합니다.");
 					Process_Clear();
 					Invoke(method, "아이피를 변경합니다.");
-                    IP_Change();
-                    Thread.Sleep(5000);
-                    Invoke(method, "크롬을 생성합니다.");
+					IP_Change();
+					Thread.Sleep(5000);
+					Invoke(method, "크롬을 생성합니다.");
 					Create_Chrome();
 					try
 					{
