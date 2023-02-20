@@ -81,6 +81,7 @@ namespace 쿠팡_상품_방문
                 var driverPath = Path.Combine(_downloadPath, "LICENSE.chromedriver");
                 var zipPath = Path.Combine(_downloadPath, "chromedriver.zip");
                 var exePath = Path.Combine(_downloadPath, "chromedriver.exe");
+                var FullPath = Path.GetFullPath(exePath);
                 var LatestVersion = GetChromeVersion(); //드라이버의 최신버전
 
                 if (File.Exists(exePath) == false)  //디렉토리에 .exe파일이 존재하지 않을 경우
@@ -89,14 +90,14 @@ namespace 쿠팡_상품_방문
                     ZipFile.ExtractToDirectory(zipPath, _downloadPath);
                     File.Delete(zipPath);
                     File.Delete(driverPath);
-                    File.Move(exePath, path);
+                    File.Move(FullPath, path);
                 }
                 else    //디렉토리에 .exe파일이 존재 할 경우
                 {
-                    var exeVersionInfo = FileVersionInfo.GetVersionInfo(exePath).ToString();    //현재 디렉토리에 존재하는 .exe 파일 버전
+                    var exeVersionInfo = FileVersionInfo.GetVersionInfo(FullPath).ToString();    //현재 디렉토리에 존재하는 .exe 파일 버전
                     if (exeVersionInfo.Equals(LatestVersion) == false)  //최신버전과 현재 다운되어있는 파일의 버전이 다를 경우
                     {
-                        File.Delete(exePath);   //기존에있는 exe파일 삭제 후
+                        File.Delete(FullPath);   //기존에있는 exe파일 삭제 후
                         this.Download();    //다시 다운로드
                     }
                 }

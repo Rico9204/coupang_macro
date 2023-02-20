@@ -282,6 +282,8 @@ namespace 쿠팡_상품_방문
 
         private void Web_Thread()
         {
+            var chromDriverDownloader = new ChromeDriverDownloader("./");
+            chromDriverDownloader.Download();
             LiatUpdateDelegate_Log method = Log;
             Invoke(method, "작업을 시작합니다.");
             while (true)
@@ -291,8 +293,8 @@ namespace 쿠팡_상품_방문
                     var currentAccount = 계정데이터.Rows[i];
                     Invoke(method, i + 1 + "번 계정으로 작업합니다.");
                     Process_Clear();
-                    Invoke(method, "아이피를 변경합니다.");
-                    IP_Change();
+                    //Invoke(method, "아이피를 변경합니다.");
+                    //IP_Change();
                     Thread.Sleep(5000);
                     Invoke(method, "크롬을 생성합니다.");
                     Create_Chrome();
