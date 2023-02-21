@@ -16,11 +16,11 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RootNamespace />
   </PropertyGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Reference Include="WebDriver">
-      <HintPath>..\WebDriver.dll</HintPath>
-    </Reference>
+    <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.8.1" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Core" />
   </ItemGroup>
 </Project>
