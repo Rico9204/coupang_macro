@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -312,7 +313,7 @@ namespace 쿠팡_상품_방문
                         }
                     }
                     catch(Exception e)
-                    {	
+                    {                 
                         Invoke(method, e.ToString());
                         continue;
                     }
@@ -323,14 +324,15 @@ namespace 쿠팡_상품_방문
                         Invoke(method, j + 1 + "번 상품을 찾습니다.");
                         try
                         {
-                            if (driver.Url != "http://www.coupang.com/")
+                            if (driver.Url != "https://www.coupang.com/")
                             {
-                                driver.Navigate().GoToUrl("http://www.coupang.com/");
+                                driver.Navigate().GoToUrl("https://www.coupang.com/");
+                                driver.Manage().Cookies.DeleteAllCookies();
+                                driver.Navigate().Refresh();
                             }
                             if (currentRow.Cells[1].Value.ToString().Contains("검색:"))
                             {
                                 driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")).Click();
-                                Thread.Sleep((int)(1000 * lateNum));
                                 Thread.Sleep((int)(1000 * lateNum));
                                 driver.ExecuteScript("arguments[0].value=arguments[1]", driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")), currentRow.Cells[1].Value.ToString().Split(new string[1] { "검색:" }, StringSplitOptions.None)[1]);
                                 driver.FindElement(By.CssSelector("[id='headerSearchBtn']")).Click();
@@ -368,6 +370,38 @@ namespace 쿠팡_상품_방문
                                         }
 
                                         break; 
+                                    }
+                                    //베스트셀러 상품 찾기
+                                    if (driver.FindElements(By.CssSelector($"[id='productList'] [class*='search-product best-seller-carousel-item'] [data-product-id='{currentRow.Cells[2].Value.ToString()}']")).Count > 0)	//제품을 쿠팡 화면에서 찾는 구문
+                                    {
+                                        Invoke(method, "상품을 찾았습니다.");
+                                        driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [class*='search-product best-seller-carousel-item'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "'] [class='name']")));
+                                        Thread.Sleep((int)(3000 * lateNum));
+                                        driver.Close();
+                                        driver.SwitchTo().Window(driver.WindowHandles.Last());
+                                        if (driver.FindElements(By.CssSelector("button[class='prod-favorite-btn ']")).Count > 0)
+                                        {
+                                            Invoke(method, "찜 클릭");
+                                            driver.FindElement(By.CssSelector("button[class='prod-favorite-btn ']")).Click();
+                                            Thread.Sleep((int)(1000 * lateNum));
+                                        }
+                                        if (driver.FindElements(By.CssSelector("button[class='prod-cart-btn']")).Count > 0)
+                                        {
+                                            Invoke(method, "장바구니 담기 클릭");
+                                            driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
+                                            Thread.Sleep((int)(1000 * lateNum));
+                                        }
+                                        End_Scroll(driver);    // TODO(성환): 장바구니 담기 후 페이지를 휠로 내리고 댓글 2~3번째 페이지까지 누르도록 
+                                        if (driver.FindElements(By.CssSelector("button[class*='sdp-review__article__page__num']")).Count > 0)
+                                        {
+                                            Invoke(method, "리뷰 클릭");
+                                            driver.FindElement(By.CssSelector("button[data-page='2']")).Click();
+                                            Thread.Sleep((int)(1000 * lateNum));
+                                            driver.FindElement(By.CssSelector("button[data-page='3']")).Click();
+                                            Thread.Sleep((int)(1000 * lateNum));
+                                        }
+
+                                        break;
                                     }
                                     Invoke(method, "다음 페이지로 이동합니다.");
                                     driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[class='btn-next']")));
@@ -507,8 +541,10 @@ namespace 쿠팡_상품_방문
                 ChromeOptions chromeOptions = new ChromeOptions();
                 chromeOptions.AddArgument("--window-position=0,0");
                 chromeOptions.AddArgument("--window-size=1280,900");
-                chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
                 chromeOptions.AddExcludedArgument("enable-automation");
+                chromeOptions.AddArguments("--disable-extensions", "--disable-infobars", "--disable-blink-features=AutomationControlled");
+                chromeOptions.AddExcludedArgument("enable-automation");
+                chromeOptions.AddArgument("--incognito");
                 chromeOptions.AddArgument("--user-data-dir=C:\\Users\\" + Environment.UserName + "\\AppData\\Local\\Google\\Chrome\\User Data");
                 driver = new ChromeDriver(chromeDriverService, chromeOptions);
             }
@@ -532,7 +568,13 @@ namespace 쿠팡_상품_방문
         private bool Login(string id, string pw)
         {
             bool result = false;
+            driver.Navigate().GoToUrl("https://coupang.com");
+            Thread.Sleep(1000);
+            driver.Manage().Cookies.DeleteAllCookies();
+            Thread.Sleep(1000);
             driver.Navigate().GoToUrl("https://login.coupang.com/login/login.pang");
+            Thread.Sleep(1000);
+            driver.Manage().Cookies.DeleteAllCookies();
             Thread.Sleep(1000);
             if (driver.FindElements(By.CssSelector("[id='logout']")).Count > 0)
             {
@@ -542,10 +584,14 @@ namespace 쿠팡_상품_방문
                 Thread.Sleep(1000);
             }
             driver.FindElement(By.CssSelector("[id='login-email-input']")).SendKeys(id);
+            Thread.Sleep(1000);
             driver.FindElement(By.CssSelector("[id='login-password-input']")).SendKeys(pw);
+            Thread.Sleep(1000);
+            driver.FindElement(By.CssSelector("[id='login-password-input']")).SendKeys(OpenQA.Selenium.Keys.Enter);
+            Thread.Sleep(1000);
             driver.FindElement(By.CssSelector("[id='login-password-input']")).SendKeys(OpenQA.Selenium.Keys.Enter);
             Thread.Sleep(5000);
-            if (driver.Url != "http://www.coupang.com/")
+            if (driver.Url != "https://www.coupang.com/")
             {
                 driver.Navigate().GoToUrl("http://www.coupang.com/");
                 Thread.Sleep(5000);
