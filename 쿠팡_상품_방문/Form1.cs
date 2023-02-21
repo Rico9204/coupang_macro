@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
 
 namespace 쿠팡_상품_방문
 {
@@ -71,6 +72,8 @@ namespace 쿠팡_상품_방문
 
         [DllImport("User32.dll")]
         public static extern int SendMessage(int hWnd, int uMsg, int wParam, int lParam);
+
+        double lateNum = 0.8;
 
         public Form1()
         {
@@ -295,7 +298,7 @@ namespace 쿠팡_상품_방문
                     Process_Clear();
                     //Invoke(method, "아이피를 변경합니다.");
                     //IP_Change();
-                    Thread.Sleep(5000);
+                    Thread.Sleep((int)(5000 * lateNum));
                     Invoke(method, "크롬을 생성합니다.");
                     Create_Chrome();
                     try
@@ -327,10 +330,11 @@ namespace 쿠팡_상품_방문
                             if (currentRow.Cells[1].Value.ToString().Contains("검색:"))
                             {
                                 driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")).Click();
-                                Thread.Sleep(1000);
+                                Thread.Sleep((int)(1000 * lateNum));
+                                Thread.Sleep((int)(1000 * lateNum));
                                 driver.ExecuteScript("arguments[0].value=arguments[1]", driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")), currentRow.Cells[1].Value.ToString().Split(new string[1] { "검색:" }, StringSplitOptions.None)[1]);
                                 driver.FindElement(By.CssSelector("[id='headerSearchBtn']")).Click();
-                                Thread.Sleep(3000);
+                                Thread.Sleep((int)(3000 * lateNum));
                                 End_Scroll(driver);
                                 for (int pageNum = 0; pageNum < 15; pageNum++) //15페이지까지 물건을 찾고 찜, 장바구니 담기 하는 반복문
                                 {
@@ -338,27 +342,28 @@ namespace 쿠팡_상품_방문
                                     {
                                         Invoke(method, "상품을 찾았습니다.");
                                         driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "'] [class='name']")));
-                                        Thread.Sleep(10000);
+                                        Thread.Sleep((int)(3000 * lateNum));
                                         driver.Close();
                                         driver.SwitchTo().Window(driver.WindowHandles.Last());
                                         if (driver.FindElements(By.CssSelector("button[class='prod-favorite-btn ']")).Count > 0)
                                         {
                                             Invoke(method, "찜 클릭");
                                             driver.FindElement(By.CssSelector("button[class='prod-favorite-btn ']")).Click();
-                                            Thread.Sleep(1000);	
+                                            Thread.Sleep((int)(1000 * lateNum));	
                                         }
                                         if (driver.FindElements(By.CssSelector("button[class='prod-cart-btn']")).Count > 0)
                                         {
                                             Invoke(method, "장바구니 담기 클릭");
                                             driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
-                                            Thread.Sleep(1000);
-                                            // TODO(성환): 장바구니 담기 후 페이지를 휠로 내리고 댓글 2~3번째 페이지까지 누르도록 하기
+                                            Thread.Sleep((int)(1000 * lateNum));
                                         }
+                                            Thread.Sleep((int)(1000 * lateNum));
+                                            Thread.Sleep((int)(1000 * lateNum));
                                         break; 
                                     }
                                     Invoke(method, "다음 페이지로 이동합니다.");
                                     driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[class='btn-next']")));
-                                    Thread.Sleep(2000);
+                                    Thread.Sleep((int)(2000 * lateNum));
                                     End_Scroll(driver);
                                 }
                             } 
@@ -381,10 +386,10 @@ namespace 쿠팡_상품_방문
                                     new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
                                     new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']"))).Perform();
                                     driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[2] + "']")).Click();
-                                    Thread.Sleep(1000);
+                                    Thread.Sleep((int)(1000 * lateNum));
                                     driver.FindElement(By.CssSelector("label[for='component" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Last() + "']")).Click();
                                 }
-                                Thread.Sleep(1000);
+                                Thread.Sleep((int)(1000 * lateNum));
                                 driver.ExecuteScript("window.scrollBy(0, 1000)");
                                 for (int l = 0; l < 15; l++)
                                 {
@@ -392,20 +397,20 @@ namespace 쿠팡_상품_방문
                                     {
                                         Invoke(method, "상품을 찾았습니다.");
                                         driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "']")).Click();
-                                        Thread.Sleep(10000);
+                                        Thread.Sleep((int)(10000 * lateNum));
                                         driver.Close();
                                         driver.SwitchTo().Window(driver.WindowHandles.Last());
                                         if (driver.FindElements(By.CssSelector("button[class='prod-favorite-btn ']")).Count > 0)
                                         {
                                             Invoke(method, "찜 클릭");
                                             driver.FindElement(By.CssSelector("button[class='prod-favorite-btn ']")).Click();
-                                            Thread.Sleep(1000);
+                                            Thread.Sleep((int)(1000 * lateNum));
                                         }
                                         if (driver.FindElements(By.CssSelector("button[class='prod-cart-btn']")).Count > 0)
                                         {
                                             Invoke(method, "장바구니 담기 클릭");
                                             driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
-                                            Thread.Sleep(1000);
+                                            Thread.Sleep((int)(1000 * lateNum));
                                         }
                                         break;
                                     }
@@ -424,7 +429,7 @@ namespace 쿠팡_상품_방문
                                         {
                                         }
                                     }
-                                    Thread.Sleep(2000);
+                                    Thread.Sleep((int)(2000 * lateNum));
                                 }
                             }
                         }
@@ -436,12 +441,12 @@ namespace 쿠팡_상품_방문
                             driver.SwitchTo().Window(driver.WindowHandles[1]);
                             driver.Close();
                             driver.SwitchTo().Window(driver.WindowHandles[0]);
-                            Thread.Sleep(1000);
+                            Thread.Sleep((int)(1000 * lateNum));
                         }
                     }
                     Invoke(method, "크롬을 종료합니다.");
                     Quit_Chrome();
-                    Thread.Sleep(5000);
+                    Thread.Sleep((int)(5000 * lateNum));
                 }
             }
         }
