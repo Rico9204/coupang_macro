@@ -357,8 +357,16 @@ namespace 쿠팡_상품_방문
                                             driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
                                             Thread.Sleep((int)(1000 * lateNum));
                                         }
+                                        End_Scroll(driver);    // TODO(성환): 장바구니 담기 후 페이지를 휠로 내리고 댓글 2~3번째 페이지까지 누르도록 
+                                        if (driver.FindElements(By.CssSelector("button[class*='sdp-review__article__page__num']")).Count > 0)
+                                        {
+                                            Invoke(method, "리뷰 클릭");
+                                            driver.FindElement(By.CssSelector("button[data-page='2']")).Click();
                                             Thread.Sleep((int)(1000 * lateNum));
+                                            driver.FindElement(By.CssSelector("button[data-page='3']")).Click();
                                             Thread.Sleep((int)(1000 * lateNum));
+                                        }
+
                                         break; 
                                     }
                                     Invoke(method, "다음 페이지로 이동합니다.");
