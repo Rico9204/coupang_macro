@@ -247,7 +247,7 @@ namespace 쿠팡_상품_방문
             일시정지버튼.Enabled = true;
             if (work_State)
             {
-                work_Thread.Resume();
+                //work_Thread.Resume();
                 return;
             }
             work_Thread = new Thread(Web_Thread);
@@ -258,7 +258,7 @@ namespace 쿠팡_상품_방문
         {
             시작버튼.Enabled = true;
             일시정지버튼.Enabled = false;
-            work_Thread.Suspend();
+            //work_Thread.Suspend();
             work_State = true;
         }
 
@@ -285,6 +285,10 @@ namespace 쿠팡_상품_방문
             }
         }
 
+        string id = "";
+        string pw = "";
+
+
         private void Web_Thread()
         {
             //var chromDriverDownloader = new ChromeDriverDownloader("./");
@@ -306,9 +310,9 @@ namespace 쿠팡_상품_방문
                     try
                     {
                         Invoke(method, "로그인을 시도합니다.");
-                        var id = currentAccount.Cells[1].Value.ToString();
+                        id = currentAccount.Cells[1].Value.ToString();
                         Thread.Sleep(1000);
-                        var pw = currentAccount.Cells[2].Value.ToString();
+                        pw = currentAccount.Cells[2].Value.ToString();
                         Thread.Sleep(1000);
                         if (Login(id, pw) == false)
                         {
@@ -363,28 +367,31 @@ namespace 쿠팡_상품_방문
                                             driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
                                             Thread.Sleep((int)(5000 * lateNum));
                                         }
-                                        if (driver.FindElements(By.CssSelector("#btfTab > ul.tab-titles > li.active")).Count > 0)
+                                        if (driver.FindElements(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Count > 0)
                                         {
                                             Invoke(method, "리뷰 클릭");
-                                            driver.FindElement(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Click();
-                                            Thread.Sleep((int)(3000 * lateNum));
-
-                                            Actions actions = new Actions(driver);
-                                            for(int p = 0 ; p < 3; p++)
-                                            {
-                                                actions.SendKeys(Keys.PageDown).Build().Perform();
-                                                Thread.Sleep((int)(2000 * lateNum));
+                                            try {
+                                                for (int p = 0; p < 3; p++)
+                                                {
+                                                    Actions actions = new Actions(driver);
+                                                    actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
+                                                    Thread.Sleep((int)(1000 * lateNum));
+                                                }
+                                                driver.FindElement(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Click();
+                                                Thread.Sleep(500);
+                                                for (int p = 0; p < 2; p++)
+                                                {
+                                                    Actions actions = new Actions(driver);
+                                                    actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
+                                                    Thread.Sleep(2000);
+                                                }
                                             }
-
-                                            driver.FindElement(By.CssSelector("#btfTab > ul.tab-contents > li.product-review.tab-contents__content > div > div.sdp-review__article.js_reviewArticleContainer > section.js_reviewArticleListContainer > div.sdp-review__article__page.js_reviewArticlePagingContainer > button:nth-child(3)")).Click();
-                                            Thread.Sleep((int)(5000 * lateNum));
-
-                                            for (int p = 0; p < 3; p++)
-                                            {
-                                                actions.SendKeys(Keys.PageDown).Build().Perform();
-                                                Thread.Sleep((int)(2000 * lateNum));
+                                            catch(OpenQA.Selenium.ElementClickInterceptedException) {
+                                                Invoke(method, "리뷰 클릭 오류");
+                                                Thread.Sleep(1000);
+                                                break;
                                             }
-                                            
+ 
                                         }
 
                                         break; 
@@ -410,28 +417,34 @@ namespace 쿠팡_상품_방문
                                             Thread.Sleep((int)(5000 * lateNum));
                                         }
                                         // TODO(성환): 장바구니 담기 후 페이지를 휠로 내리고 댓글 2~3번째 페이지까지 누르도록 
-                                        
+
                                         if (driver.FindElements(By.CssSelector("#btfTab > ul.tab-titles > li.active")).Count > 0)
                                         {
                                             Invoke(method, "리뷰 클릭");
-                                            driver.FindElement(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Click();
-                                            Thread.Sleep((int)(3000 * lateNum));
-
-                                            Actions actions = new Actions(driver);
-                                            for (int p = 0; p < 3; p++)
+                                            try
                                             {
-                                                actions.SendKeys(Keys.PageDown).Build().Perform();
-                                                Thread.Sleep((int)(2000 * lateNum));
+                                                for (int p = 0; p < 3; p++)
+                                                {
+                                                    Actions actions = new Actions(driver);
+                                                    actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
+                                                    Thread.Sleep((int)(1000 * lateNum));
+                                                }
+                                                driver.FindElement(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Click();
+                                                Thread.Sleep(500);
+                                                for (int p = 0; p < 2; p++)
+                                                {
+                                                    Actions actions = new Actions(driver);
+                                                    actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
+                                                    Thread.Sleep(2000);
+                                                }
+                                            }
+                                            catch (OpenQA.Selenium.ElementClickInterceptedException)
+                                            {
+                                                Invoke(method, "리뷰 클릭 오류");
+                                                Thread.Sleep(1000);
+                                                break;
                                             }
 
-                                            driver.FindElement(By.CssSelector("#btfTab > ul.tab-contents > li.product-review.tab-contents__content > div > div.sdp-review__article.js_reviewArticleContainer > section.js_reviewArticleListContainer > div.sdp-review__article__page.js_reviewArticlePagingContainer > button:nth-child(3)")).Click();
-                                            Thread.Sleep((int)(5000 * lateNum));
-
-                                            for (int p = 0; p < 3; p++)
-                                            {
-                                                actions.SendKeys(Keys.PageDown).Build().Perform();
-                                                Thread.Sleep((int)(2000 * lateNum));
-                                            }
                                         }
 
                                         break;
@@ -522,16 +535,31 @@ namespace 쿠팡_상품_방문
                                                 break;
                                             }
                                         }
-                                        catch
+                                        catch (OpenQA.Selenium.NoSuchWindowException)
                                         {
+                                            Invoke(method, "웹 페이지 비정상 종료");
+                                            Thread.Sleep(1000);
+                                            Create_Chrome();
+                                            Thread.Sleep(1000);
+                                            Login(id, pw);
+                                            Thread.Sleep(1000);
+                                            continue;
                                         }
                                     }
                                     Thread.Sleep((int)(2000 * lateNum));
                                 }
                             }
                         }
-                        catch
+                        catch (OpenQA.Selenium.NoSuchWindowException)
                         {
+                            Invoke(method, "웹 페이지 비정상 종료");
+                            Thread.Sleep(1000);
+                            Create_Chrome();
+                            Thread.Sleep(1000);
+                            Login(id, pw);
+                            Thread.Sleep(1000);
+                            continue;
+                            //이떄구나 시발롬
                         }
                         while (driver.WindowHandles.Count != 1)
                         {
@@ -636,6 +664,11 @@ namespace 쿠팡_상품_방문
                 driver.Navigate().GoToUrl("https://login.coupang.com/login/logout.pang");
                 Thread.Sleep(1000);
                 driver.Navigate().GoToUrl("https://login.coupang.com/login/login.pang");
+                Thread.Sleep(1000);
+            }
+            if (driver.FindElements(By.CssSelector("[id='a.password.active")).Count > 0)
+            {
+                driver.FindElement(By.CssSelector("button[class='password active']")).Click();
                 Thread.Sleep(1000);
             }
             driver.FindElement(By.CssSelector("[id='login-email-input']")).SendKeys(id);
