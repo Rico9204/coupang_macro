@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Microsoft.Win32;
 
 namespace 쿠팡_상품_방문
