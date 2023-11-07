@@ -247,7 +247,7 @@ namespace 쿠팡_상품_방문
             일시정지버튼.Enabled = true;
             if (work_State)
             {
-                //work_Thread.Resume();
+                work_Thread.Resume();
                 return;
             }
             work_Thread = new Thread(Web_Thread);
@@ -258,7 +258,7 @@ namespace 쿠팡_상품_방문
         {
             시작버튼.Enabled = true;
             일시정지버튼.Enabled = false;
-            //work_Thread.Suspend();
+            work_Thread.Suspend();
             work_State = true;
         }
 
@@ -291,9 +291,9 @@ namespace 쿠팡_상품_방문
 
         private void Web_Thread()
         {
+            LiatUpdateDelegate_Log method = Log;
             //var chromDriverDownloader = new ChromeDriverDownloader("./");
             //chromDriverDownloader.Download();
-            LiatUpdateDelegate_Log method = Log;
             Invoke(method, "작업을 시작합니다.");
             while (true)
             {
@@ -385,10 +385,11 @@ namespace 쿠팡_상품_방문
                                                     actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
                                                     Thread.Sleep(2000);
                                                 }
+                                                Thread.Sleep(6000);
                                             }
                                             catch(OpenQA.Selenium.ElementClickInterceptedException) {
                                                 Invoke(method, "리뷰 클릭 오류");
-                                                Thread.Sleep(1000);
+                                                Thread.Sleep(3000);
                                                 break;
                                             }
  
@@ -437,11 +438,12 @@ namespace 쿠팡_상품_방문
                                                     actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
                                                     Thread.Sleep(2000);
                                                 }
+                                                Thread.Sleep(6000);
                                             }
                                             catch (OpenQA.Selenium.ElementClickInterceptedException)
                                             {
                                                 Invoke(method, "리뷰 클릭 오류");
-                                                Thread.Sleep(1000);
+                                                Thread.Sleep(3000);
                                                 break;
                                             }
 
@@ -538,12 +540,8 @@ namespace 쿠팡_상품_방문
                                         catch (OpenQA.Selenium.NoSuchWindowException)
                                         {
                                             Invoke(method, "웹 페이지 비정상 종료");
-                                            Thread.Sleep(1000);
-                                            Create_Chrome();
-                                            Thread.Sleep(1000);
-                                            Login(id, pw);
-                                            Thread.Sleep(1000);
-                                            continue;
+                                            Thread.Sleep(3000);
+                                            break;
                                         }
                                     }
                                     Thread.Sleep((int)(2000 * lateNum));
@@ -554,11 +552,7 @@ namespace 쿠팡_상품_방문
                         {
                             Invoke(method, "웹 페이지 비정상 종료");
                             Thread.Sleep(1000);
-                            Create_Chrome();
-                            Thread.Sleep(1000);
-                            Login(id, pw);
-                            Thread.Sleep(1000);
-                            continue;
+                            break;
                             //이떄구나 시발롬
                         }
                         while (driver.WindowHandles.Count != 1)
@@ -566,7 +560,7 @@ namespace 쿠팡_상품_방문
                             driver.SwitchTo().Window(driver.WindowHandles[1]);
                             driver.Close();
                             driver.SwitchTo().Window(driver.WindowHandles[0]);
-                            Thread.Sleep((int)(1000 * lateNum));
+                            Thread.Sleep(3000);
                         }
                     }
                     Invoke(method, "크롬을 종료합니다.");
