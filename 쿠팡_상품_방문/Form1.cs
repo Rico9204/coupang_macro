@@ -551,7 +551,7 @@ namespace 쿠팡_상품_방문
                         catch (OpenQA.Selenium.NoSuchWindowException)
                         {
                             Invoke(method, "웹 페이지 비정상 종료");
-                            Thread.Sleep(1000);
+                            Thread.Sleep(3000);
                             break;
                             //이떄구나 시발롬
                         }
