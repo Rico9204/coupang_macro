@@ -346,7 +346,7 @@ namespace 쿠팡_상품_방문
                                 driver.FindElement(By.CssSelector("[id='headerSearchBtn']")).Click();
                                 Thread.Sleep((int)(3000 * lateNum));
                                 End_Scroll(driver);
-                                for (int pageNum = 0; pageNum < 15; pageNum++) //15페이지까지 물건을 찾고 찜, 장바구니 담기 하는 반복문
+                                for (int pageNum = 0; pageNum < 5; pageNum++) //5페이지까지 물건을 찾고 찜, 장바구니 담기 하는 반복문
                                 {
                                     if (driver.FindElements(By.CssSelector($"[id='productList'] [data-product-id='{currentRow.Cells[2].Value.ToString()}']")).Count > 0)	//제품을 쿠팡 화면에서 찾는 구문
                                     {
@@ -452,7 +452,15 @@ namespace 쿠팡_상품_방문
                                         break;
                                     }
                                     Invoke(method, "다음 페이지로 이동합니다.");
-                                    driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[class='btn-next']")));
+                                    try
+                                    {
+                                        driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[class='btn-next']")));
+                                    }
+                                    catch (OpenQA.Selenium.NoSuchElementException)
+                                    {
+                                        Invoke(method, "다음 페이지 이동 중 오류");
+                                        break;
+                                    }
                                     Thread.Sleep((int)(2000 * lateNum));
                                     End_Scroll(driver);
                                 }
