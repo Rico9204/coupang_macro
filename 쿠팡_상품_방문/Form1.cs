@@ -66,6 +66,8 @@ namespace 쿠팡_상품_방문
 
         private DataGridViewTextBoxColumn Column3;
 
+        private DataGridViewTextBoxColumn Column4; //필터 가격
+
         [DllImport("user32.dll")]
         public static extern int FindWindow(string lpClassName, string lpWindowName);
 
@@ -206,7 +208,8 @@ namespace 쿠팡_상품_방문
             {
                 if (array[i] != "")
                 {
-                    작업데이터.Rows.Add("", array[i].Split(new string[1] { "\t" }, StringSplitOptions.None)[0], array[i].Split(new string[1] { "\t" }, StringSplitOptions.None)[1]);
+                    작업데이터.Rows.Add("", array[i].Split(new string[1] { "\t" }, StringSplitOptions.None)[0], array[i].Split(new string[1] { "\t" }, StringSplitOptions.None)[1], 
+                        array[i].Split(new string[1] { "\t" }, StringSplitOptions.None)[2]); //필터 가격 불러오기
                 }
             }
         }
@@ -345,6 +348,16 @@ namespace 쿠팡_상품_방문
                                 Thread.Sleep((int)(1000 * lateNum));
                                 driver.FindElement(By.CssSelector("[id='headerSearchBtn']")).Click();
                                 Thread.Sleep((int)(3000 * lateNum));
+                                End_Scroll(driver);
+                                if (driver.FindElements(By.CssSelector("#searchPriceFilter > div > span:nth-child(1) > input")).Count > 0)  //최소가격 필터 칸을 찾으면
+                                { 
+                                    Invoke(method, "가격 필터를 찾아 값을 입력합니다.");
+                                    driver.FindElement(By.CssSelector("#searchPriceFilter > div > span:nth-child(1) > input")).SendKeys(currentRow.Cells[3].Value.ToString());
+                                    Thread.Sleep(1500);
+                                    driver.FindElement(By.CssSelector("#searchPriceFilter > div > span:nth-child(2) > input")).SendKeys(currentRow.Cells[3].Value.ToString());
+                                    Thread.Sleep(1500);
+                                    driver.FindElement(By.CssSelector("#searchPriceFilter > div > a")).Click() ;
+                                }
                                 End_Scroll(driver);
                                 for (int pageNum = 0; pageNum < 5; pageNum++) //5페이지까지 물건을 찾고 찜, 장바구니 담기 하는 반복문
                                 {
@@ -867,11 +880,12 @@ namespace 쿠팡_상품_방문
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn(); //필터 가격
             ((System.ComponentModel.ISupportInitialize)this.작업데이터).BeginInit();
             ((System.ComponentModel.ISupportInitialize)this.계정데이터).BeginInit();
             base.SuspendLayout();
             this.작업데이터.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.작업데이터.Columns.AddRange(this.Column1, this.Column2, this.Column3);
+            this.작업데이터.Columns.AddRange(this.Column1, this.Column2, this.Column3, this.Column4);
             this.작업데이터.Location = new System.Drawing.Point(330, 12);
             this.작업데이터.Name = "작업데이터";
             this.작업데이터.RowTemplate.Height = 23;
@@ -958,9 +972,12 @@ namespace 쿠팡_상품_방문
             this.Column1.Width = 40;
             this.Column2.HeaderText = "구분";
             this.Column2.Name = "Column2";
-            this.Column2.Width = 300;
+            this.Column2.Width = 250;
             this.Column3.HeaderText = "상품";
             this.Column3.Name = "Column3";
+            this.Column4.HeaderText = "필터 가격";  //"필터 가격" 텍스트 표시
+            this.Column4.Name = "Column4";  // 필터 가격 이름
+            this.Column2.Width = 240;   // 필터 가격 넓이 설정
             base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 12f);
             base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             base.ClientSize = new System.Drawing.Size(858, 366);
