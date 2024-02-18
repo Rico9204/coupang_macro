@@ -380,33 +380,33 @@ namespace 쿠팡_상품_방문
                                             driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
                                             Thread.Sleep((int)(5000 * lateNum));
                                         }
-                                        if (driver.FindElements(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Count > 0)
-                                        {
-                                            Invoke(method, "리뷰 클릭");
-                                            try {
-                                                for (int p = 0; p < 3; p++)
-                                                {
-                                                    Actions actions = new Actions(driver);
-                                                    actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
-                                                    Thread.Sleep((int)(1000 * lateNum));
-                                                }
-                                                driver.FindElement(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Click();
-                                                Thread.Sleep(500);
-                                                for (int p = 0; p < 2; p++)
-                                                {
-                                                    Actions actions = new Actions(driver);
-                                                    actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
-                                                    Thread.Sleep(2000);
-                                                }
-                                                Thread.Sleep(6000);
-                                            }
-                                            catch(OpenQA.Selenium.ElementClickInterceptedException) {
-                                                Invoke(method, "리뷰 클릭 오류");
-                                                Thread.Sleep(3000);
-                                                break;
-                                            }
+                                        //if (driver.FindElements(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Count > 0)
+                                        //{
+                                        //    Invoke(method, "리뷰 클릭");
+                                        //    try {
+                                        //        for (int p = 0; p < 3; p++)
+                                        //        {
+                                        //            Actions actions = new Actions(driver);
+                                        //            actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
+                                        //            Thread.Sleep((int)(1000 * lateNum));
+                                        //        }
+                                        //        driver.FindElement(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Click();
+                                        //        Thread.Sleep(500);
+                                        //        for (int p = 0; p < 2; p++)
+                                        //        {
+                                        //            Actions actions = new Actions(driver);
+                                        //            actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
+                                        //            Thread.Sleep(2000);
+                                        //        }
+                                        //        Thread.Sleep(6000);
+                                        //    }
+                                        //    catch(OpenQA.Selenium.ElementClickInterceptedException) {
+                                        //        Invoke(method, "리뷰 클릭 오류");
+                                        //        Thread.Sleep(3000);
+                                        //        break;
+                                        //    }
  
-                                        }
+                                        //}
 
                                         break; 
                                     }
