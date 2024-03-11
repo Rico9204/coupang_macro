@@ -293,160 +293,331 @@ namespace 쿠팡_상품_방문
             {
                 for (int i = 0; i < 계정데이터.Rows.Count - 1; i++)
                 {
-                    var currentAccount = 계정데이터.Rows[i];
-                    Invoke(method, i + 1 + "번 계정으로 작업합니다.");
-                    Process_Clear();
-                    //Invoke(method, "아이피를 변경합니다.");
-                    //IP_Change();
-                    Thread.Sleep((int)(5000 * lateNum));
-                    Invoke(method, "크롬을 생성합니다.");
-                    Create_Chrome();
                     try
                     {
-                        Invoke(method, "로그인을 시도합니다.");
-                        var id = currentAccount.Cells[1].Value.ToString();
-                        var pw = currentAccount.Cells[2].Value.ToString();
-                        if (Login(id, pw) == false)
-                        {
-                            throw new Exception("Login failed");
-                        }
-                    }
-                    catch(Exception e)
-                    {	
-                        Invoke(method, e.ToString());
-                        continue;
-                    }
-                    
-                    for (int j = 0; j < 작업데이터.Rows.Count - 1; j++)
-                    {
-                        var currentRow = 작업데이터.Rows[j];
-                        Invoke(method, j + 1 + "번 상품을 찾습니다.");
+                        var currentAccount = 계정데이터.Rows[i];
+                        Invoke(method, i + 1 + "번 계정으로 작업합니다.");
+                        Process_Clear();
+                        //Invoke(method, "아이피를 변경합니다.");
+                        //IP_Change();
+                        Thread.Sleep((int)(5000 * lateNum));
+                        Invoke(method, "크롬을 생성합니다.");
+                        Create_Chrome();
                         try
                         {
-                            if (driver.Url != "http://www.coupang.com/")
+                            Invoke(method, "로그인을 시도합니다.");
+                            id = currentAccount.Cells[1].Value.ToString();
+                            Thread.Sleep(1000);
+                            pw = currentAccount.Cells[2].Value.ToString();
+                            Thread.Sleep(1000);
+                            if (Login(id, pw) == false)
                             {
-                                driver.Navigate().GoToUrl("http://www.coupang.com/");
+                                throw new Exception("Login failed");
                             }
-                            if (currentRow.Cells[1].Value.ToString().Contains("검색:"))
+                        }
+                        catch (Exception e)
+                        {
+                            Invoke(method, e.ToString());
+                            continue;
+                        }
+
+                        for (int j = 0; j < 작업데이터.Rows.Count - 1; j++)
+                        {
+                            var currentRow = 작업데이터.Rows[j];
+                            Invoke(method, j + 1 + "번 상품을 찾습니다.");
+                            try
                             {
-                                driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")).Click();
-                                Thread.Sleep((int)(1000 * lateNum));
-                                Thread.Sleep((int)(1000 * lateNum));
-                                driver.ExecuteScript("arguments[0].value=arguments[1]", driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")), currentRow.Cells[1].Value.ToString().Split(new string[1] { "검색:" }, StringSplitOptions.None)[1]);
-                                driver.FindElement(By.CssSelector("[id='headerSearchBtn']")).Click();
-                                Thread.Sleep((int)(3000 * lateNum));
-                                End_Scroll(driver);
-                                for (int pageNum = 0; pageNum < 15; pageNum++) //15페이지까지 물건을 찾고 찜, 장바구니 담기 하는 반복문
+                                if (driver.Url != "https://www.coupang.com/")
                                 {
-                                    if (driver.FindElements(By.CssSelector($"[id='productList'] [data-product-id='{currentRow.Cells[2].Value.ToString()}']")).Count > 0)	//제품을 쿠팡 화면에서 찾는 구문
+                                    driver.Navigate().GoToUrl("https://www.coupang.com/");
+                                    //driver.Manage().Cookies.DeleteAllCookies();
+                                    //driver.Navigate().Refresh();
+                                }
+                                if (currentRow.Cells[1].Value.ToString().Contains("검색:"))
+                                {
+                                    var startTime = DateTime.Now; // 시작 시간 기록
+                                    while (driver.FindElements(By.CssSelector("[id='headerSearchKeyword']")).Count < 1) //로딩 후 검색 할 수 있도록
                                     {
-                                        Invoke(method, "상품을 찾았습니다.");
-                                        driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "'] [class='name']")));
-                                        Thread.Sleep((int)(3000 * lateNum));
-                                        driver.Close();
-                                        driver.SwitchTo().Window(driver.WindowHandles.Last());
-                                        if (driver.FindElements(By.CssSelector("button[class='prod-favorite-btn ']")).Count > 0)
+                                        if (DateTime.Now - startTime > TimeSpan.FromSeconds(15)) // 15초를 초과했는지 확인
                                         {
-                                            Invoke(method, "찜 클릭");
-                                            driver.FindElement(By.CssSelector("button[class='prod-favorite-btn ']")).Click();
-                                            Thread.Sleep((int)(1000 * lateNum));	
+                                            Invoke(method, "로딩 시간 초과. 웹 페이지를 닫습니다.");
+                                            driver.Quit(); // 웹 드라이버 종료
+                                            break;
                                         }
-                                        if (driver.FindElements(By.CssSelector("button[class='prod-cart-btn']")).Count > 0)
-                                        {
-                                            Invoke(method, "장바구니 담기 클릭");
-                                            driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
-                                            Thread.Sleep((int)(1000 * lateNum));
-                                        }
-                                            Thread.Sleep((int)(1000 * lateNum));
-                                            Thread.Sleep((int)(1000 * lateNum));
-                                        break; 
+                                        Thread.Sleep(500);
                                     }
-                                    Invoke(method, "다음 페이지로 이동합니다.");
-                                    driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[class='btn-next']")));
-                                    Thread.Sleep((int)(2000 * lateNum));
-                                    End_Scroll(driver);
-                                }
-                            } 
-                            else // TODO(성환): 어떤 조건에서 실행시키는지 잘 모르겠음 일단 대충봐서는 등록된 계정이 없는 경우인듯 함
-                            {
-                                new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class^='category-btn']"))).Perform();
-                                if (currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 2)
-                                {
-                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
-                                    driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']")).Click();
-                                }
-                                else if (currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 3)
-                                {
-                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
-                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']"))).Perform();
-                                    driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[2] + "']")).Click();
-                                }
-                                else if (currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 4)
-                                {
-                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
-                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']"))).Perform();
-                                    driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[2] + "']")).Click();
+                                    driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")).Click();
                                     Thread.Sleep((int)(1000 * lateNum));
-                                    driver.FindElement(By.CssSelector("label[for='component" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Last() + "']")).Click();
-                                }
-                                Thread.Sleep((int)(1000 * lateNum));
-                                driver.ExecuteScript("window.scrollBy(0, 1000)");
-                                for (int l = 0; l < 15; l++)
-                                {
-                                    if (driver.FindElements(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "']")).Count > 0)
+                                    driver.ExecuteScript("arguments[0].value=arguments[1]", driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")), currentRow.Cells[1].Value.ToString().Split(new string[1] { "검색:" }, StringSplitOptions.None)[1]);
+                                    Thread.Sleep((int)(1000 * lateNum));
+                                    driver.FindElement(By.CssSelector("[id='headerSearchBtn']")).Click();
+                                    Thread.Sleep((int)(3000 * lateNum));
+                                    End_Scroll(driver);
+                                    if (driver.FindElements(By.CssSelector("#searchPriceFilter > div > span:nth-child(1) > input")).Count > 0)  //최소가격 필터 칸을 찾으면
                                     {
-                                        Invoke(method, "상품을 찾았습니다.");
-                                        driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "']")).Click();
-                                        Thread.Sleep((int)(10000 * lateNum));
-                                        driver.Close();
-                                        driver.SwitchTo().Window(driver.WindowHandles.Last());
-                                        if (driver.FindElements(By.CssSelector("button[class='prod-favorite-btn ']")).Count > 0)
-                                        {
-                                            Invoke(method, "찜 클릭");
-                                            driver.FindElement(By.CssSelector("button[class='prod-favorite-btn ']")).Click();
-                                            Thread.Sleep((int)(1000 * lateNum));
-                                        }
-                                        if (driver.FindElements(By.CssSelector("button[class='prod-cart-btn']")).Count > 0)
-                                        {
-                                            Invoke(method, "장바구니 담기 클릭");
-                                            driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
-                                            Thread.Sleep((int)(1000 * lateNum));
-                                        }
-                                        break;
+                                        Invoke(method, "가격 필터를 찾아 값을 입력합니다.");
+                                        driver.FindElement(By.CssSelector("#searchPriceFilter > div > span:nth-child(1) > input")).SendKeys(currentRow.Cells[3].Value.ToString());
+                                        Thread.Sleep(1500);
+                                        driver.FindElement(By.CssSelector("#searchPriceFilter > div > span:nth-child(2) > input")).SendKeys(currentRow.Cells[3].Value.ToString());
+                                        Thread.Sleep(1500);
+                                        driver.FindElement(By.CssSelector("#searchPriceFilter > div > a")).Click();
                                     }
-                                    for (int m = 0; m < driver.FindElements(By.CssSelector("[class='page-warpper'] a")).Count; m++)
+                                    End_Scroll(driver);
+                                    for (int pageNum = 0; pageNum < 5; pageNum++) //5페이지까지 물건을 찾고 찜, 장바구니 담기 하는 반복문
                                     {
+                                        if (driver.FindElements(By.CssSelector($"[id='productList'] [data-product-id='{currentRow.Cells[2].Value.ToString()}']")).Count > 0)    //제품을 쿠팡 화면에서 찾는 구문
+                                        {
+                                            Invoke(method, "상품을 찾았습니다.");
+                                            //driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "'] [class='name']")));
+                                            driver.FindElement(By.CssSelector($"[id='productList'] [data-product-id='{currentRow.Cells[2].Value.ToString()}']")).Click(); //필터링 기능을 추가한 뒤에 위의 주석처리한 구문이 작동하지 않아서 현재 문장으로 수정함
+                                            Thread.Sleep((int)(3000 * lateNum));
+                                            driver.Close();
+                                            driver.SwitchTo().Window(driver.WindowHandles.Last());
+                                            if (driver.FindElements(By.CssSelector("button[class='prod-favorite-btn ']")).Count > 0)
+                                            {
+                                                Invoke(method, "찜 클릭");
+                                                driver.FindElement(By.CssSelector("button[class='prod-favorite-btn ']")).Click();
+                                                Thread.Sleep((int)(5000 * lateNum));
+                                            }
+                                            if (driver.FindElements(By.CssSelector("button[class='prod-cart-btn']")).Count > 0)
+                                            {
+                                                Invoke(method, "장바구니 담기 클릭");
+                                                driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
+                                                Thread.Sleep((int)(5000 * lateNum));
+                                            }
+                                            //if (driver.FindElements(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Count > 0)
+                                            //{
+                                            //    Invoke(method, "리뷰 클릭");
+                                            //    try {
+                                            //        for (int p = 0; p < 3; p++)
+                                            //        {
+                                            //            Actions actions = new Actions(driver);
+                                            //            actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
+                                            //            Thread.Sleep((int)(1000 * lateNum));
+                                            //        }
+                                            //        driver.FindElement(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Click();
+                                            //        Thread.Sleep(500);
+                                            //        for (int p = 0; p < 2; p++)
+                                            //        {
+                                            //            Actions actions = new Actions(driver);
+                                            //            actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
+                                            //            Thread.Sleep(2000);
+                                            //        }
+                                            //        Thread.Sleep(6000);
+                                            //    }
+                                            //    catch(OpenQA.Selenium.ElementClickInterceptedException) {
+                                            //        Invoke(method, "리뷰 클릭 오류");
+                                            //        Thread.Sleep(3000);
+                                            //        break;
+                                            //    }
+
+                                            //}
+
+                                            break;
+                                        }
+                                        //베스트셀러 상품 찾기
+                                        if (driver.FindElements(By.CssSelector($"[id='productList'] [class*='search-product best-seller-carousel-item'] [data-product-id='{currentRow.Cells[2].Value.ToString()}']")).Count > 0)    //제품을 쿠팡 화면에서 찾는 구문
+                                        {
+                                            Invoke(method, "상품을 찾았습니다.");
+                                            driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [class*='search-product best-seller-carousel-item'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "'] [class='name']")));
+                                            Thread.Sleep((int)(3000 * lateNum));
+                                            driver.Close();
+                                            driver.SwitchTo().Window(driver.WindowHandles.Last());
+                                            if (driver.FindElements(By.CssSelector("button[class='prod-favorite-btn ']")).Count > 0)
+                                            {
+                                                Invoke(method, "찜 클릭");
+                                                driver.FindElement(By.CssSelector("button[class='prod-favorite-btn ']")).Click();
+                                                Thread.Sleep((int)(5000 * lateNum));
+                                            }
+                                            if (driver.FindElements(By.CssSelector("button[class='prod-cart-btn']")).Count > 0)
+                                            {
+                                                Invoke(method, "장바구니 담기 클릭");
+                                                driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
+                                                Thread.Sleep((int)(5000 * lateNum));
+                                            }
+                                            // TODO(성환): 장바구니 담기 후 페이지를 휠로 내리고 댓글 2~3번째 페이지까지 누르도록 
+
+                                            if (driver.FindElements(By.CssSelector("#btfTab > ul.tab-titles > li.active")).Count > 0)
+                                            {
+                                                Invoke(method, "리뷰 클릭");
+                                                try
+                                                {
+                                                    for (int p = 0; p < 3; p++)
+                                                    {
+                                                        Actions actions = new Actions(driver);
+                                                        actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
+                                                        Thread.Sleep((int)(1000 * lateNum));
+                                                    }
+                                                    driver.FindElement(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Click();
+                                                    Thread.Sleep(500);
+                                                    for (int p = 0; p < 2; p++)
+                                                    {
+                                                        Actions actions = new Actions(driver);
+                                                        actions.SendKeys(OpenQA.Selenium.Keys.PageDown).Perform();
+                                                        Thread.Sleep(2000);
+                                                    }
+                                                    Thread.Sleep(6000);
+                                                }
+                                                catch (OpenQA.Selenium.ElementClickInterceptedException)
+                                                {
+                                                    Invoke(method, "리뷰 클릭 오류");
+                                                    Thread.Sleep(3000);
+                                                    break;
+                                                }
+
+                                            }
+
+                                            break;
+                                        }
+                                        Invoke(method, "다음 페이지로 이동합니다.");
                                         try
                                         {
-                                            if (driver.FindElements(By.CssSelector("[class='page-warpper'] a"))[m].GetAttribute("class") == "selected")
+                                            driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[class='btn-next']")));
+                                        }
+                                        catch (OpenQA.Selenium.NoSuchElementException)
+                                        {
+                                            Invoke(method, "다음 페이지 이동 중 오류");
+                                            break;
+                                        }
+                                        Thread.Sleep((int)(2000 * lateNum));
+                                        End_Scroll(driver);
+                                    }
+                                }
+                                else // TODO(성환): 어떤 조건에서 실행시키는지 잘 모르겠음 일단 대충봐서는 등록된 계정이 없는 경우인듯 함
+                                {
+                                    new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class^='category-btn']"))).Perform();
+                                    if (currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 2)
+                                    {
+                                        new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
+                                        driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']")).Click();
+                                    }
+                                    else if (currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 3)
+                                    {
+                                        new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
+                                        new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']"))).Perform();
+                                        driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[2] + "']")).Click();
+                                    }
+                                    else if (currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Count() == 4)
+                                    {
+                                        new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class='" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[0] + "']"))).Perform();
+                                        new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[1] + "']"))).Perform();
+                                        driver.FindElement(By.CssSelector("[href='/np/categories/" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None)[2] + "']")).Click();
+                                        Thread.Sleep((int)(1000 * lateNum));
+                                        driver.FindElement(By.CssSelector("label[for='component" + currentRow.Cells[1].Value.ToString().Split(new string[1] { ";" }, StringSplitOptions.None).Last() + "']")).Click();
+                                    }
+                                    Thread.Sleep((int)(1000 * lateNum));
+                                    driver.ExecuteScript("window.scrollBy(0, 1000)");
+                                    for (int l = 0; l < 15; l++)
+                                    {
+                                        if (driver.FindElements(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "']")).Count > 0)
+                                        {
+                                            Invoke(method, "상품을 찾았습니다.");
+                                            driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "']")).Click();
+                                            Thread.Sleep((int)(10000 * lateNum));
+                                            driver.Close();
+                                            driver.SwitchTo().Window(driver.WindowHandles.Last());
+                                            if (driver.FindElements(By.CssSelector("button[class='prod-favorite-btn ']")).Count > 0)
                                             {
-                                                Invoke(method, "다음 페이지로 이동합니다.");
-                                                driver.ExecuteScript("arguments[0].click()", driver.FindElements(By.CssSelector("[class='page-warpper'] a"))[m + 1]);
+                                                Invoke(method, "찜 클릭");
+                                                driver.FindElement(By.CssSelector("button[class='prod-favorite-btn ']")).Click();
+                                                Thread.Sleep((int)(1000 * lateNum));
+                                            }
+                                            if (driver.FindElements(By.CssSelector("button[class='prod-cart-btn']")).Count > 0)
+                                            {
+                                                Invoke(method, "장바구니 담기 클릭");
+                                                driver.FindElement(By.CssSelector("button[class='prod-cart-btn']")).Click();
+                                                Thread.Sleep((int)(1000 * lateNum));
+                                            }
+                                            if (driver.FindElements(By.CssSelector("#btfTab > ul.tab-titles > li.active")).Count > 0)
+                                            {
+                                                Invoke(method, "리뷰 클릭");
+                                                driver.FindElement(By.CssSelector("#btfTab > ul.tab-titles > li:nth-child(2)")).Click();
+                                                Thread.Sleep((int)(3000 * lateNum));
+
+                                                Actions actions = new Actions(driver);
+                                                for (int p = 0; p < 2; p++)
+                                                {
+                                                    actions.SendKeys(Keys.PageDown).Build().Perform();
+                                                    Thread.Sleep((int)(2000 * lateNum));
+                                                }
+
+                                                driver.FindElement(By.CssSelector("#btfTab > ul.tab-contents > li.product-review.tab-contents__content > div > div.sdp-review__article.js_reviewArticleContainer > section.js_reviewArticleListContainer > div.sdp-review__article__page.js_reviewArticlePagingContainer > button:nth-child(2)")).Click();
+                                                Thread.Sleep((int)(3000 * lateNum));
+
+                                                for (int p = 0; p < 2; p++)
+                                                {
+                                                    actions.SendKeys(Keys.PageDown).Build().Perform();
+                                                    Thread.Sleep((int)(2000 * lateNum));
+                                                }
+                                            }
+                                            break;
+                                        }
+                                        for (int m = 0; m < driver.FindElements(By.CssSelector("[class='page-warpper'] a")).Count; m++)
+                                        {
+                                            try
+                                            {
+                                                if (driver.FindElements(By.CssSelector("[class='page-warpper'] a"))[m].GetAttribute("class") == "selected")
+                                                {
+                                                    Invoke(method, "다음 페이지로 이동합니다.");
+                                                    driver.ExecuteScript("arguments[0].click()", driver.FindElements(By.CssSelector("[class='page-warpper'] a"))[m + 1]);
+                                                    break;
+                                                }
+                                            }
+                                            catch (OpenQA.Selenium.NoSuchWindowException)
+                                            {
+                                                Invoke(method, "웹 페이지 비정상 종료");
+                                                Thread.Sleep(3000);
                                                 break;
                                             }
                                         }
-                                        catch
-                                        {
-                                        }
+                                        Thread.Sleep((int)(2000 * lateNum));
                                     }
-                                    Thread.Sleep((int)(2000 * lateNum));
                                 }
                             }
+                            catch (OpenQA.Selenium.NoSuchWindowException)
+                            {
+                                Invoke(method, "웹 페이지 비정상 종료");
+                                Thread.Sleep(3000);
+                                break;
+                                //이떄구나 시발롬
+                            }
+                            try
+                            {
+                                while (driver.WindowHandles.Count != 1)
+                                {
+                                    driver.SwitchTo().Window(driver.WindowHandles[1]);
+                                    driver.Close();
+                                    driver.SwitchTo().Window(driver.WindowHandles[0]);
+                                    Thread.Sleep(3000);
+                                }
+                            }
+                            catch (OpenQA.Selenium.WebDriverException)
+                            {
+                                Invoke(method, "웹 페이지 비정상 종료");
+                                Thread.Sleep(3000);
+                                break;
+                            }
                         }
-                        catch
-                        {
-                        }
-                        while (driver.WindowHandles.Count != 1)
-                        {
-                            driver.SwitchTo().Window(driver.WindowHandles[1]);
-                            driver.Close();
-                            driver.SwitchTo().Window(driver.WindowHandles[0]);
-                            Thread.Sleep((int)(1000 * lateNum));
-                        }
+                        Invoke(method, "크롬을 종료합니다.");
+                        Quit_Chrome();
+                        Thread.Sleep((int)(5000 * lateNum));
                     }
-                    Invoke(method, "크롬을 종료합니다.");
-                    Quit_Chrome();
-                    Thread.Sleep((int)(5000 * lateNum));
+                    catch (Exception e)
+                    {
+                        Invoke(method, e.ToString());
+                        Invoke(method, "오류를 발견하여 다음 계정으로 넘어갑니다.");
+                        if (driver.WindowHandles.Count >= 1)
+                        {
+                            while (true)
+                            {
+                                Quit_Chrome();
+                                Thread.Sleep(1000);
+                                if (driver.WindowHandles.Count == 0)
+                                    break;
+                            }
+                        }
+                        continue;
+                    }
                 }
             }
         }
