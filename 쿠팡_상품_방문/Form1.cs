@@ -329,9 +329,19 @@ namespace 쿠팡_상품_방문
                             {
                                 if (driver.Url != "https://www.coupang.com/")
                                 {
+<<<<<<< HEAD
                                     driver.Navigate().GoToUrl("https://www.coupang.com/");
                                     //driver.Manage().Cookies.DeleteAllCookies();
                                     //driver.Navigate().Refresh();
+=======
+                                    if (DateTime.Now - startTime > TimeSpan.FromSeconds(30)) // 30초를 초과했는지 확인
+                                    {
+                                        Invoke(method, "로딩 시간 초과. 웹 페이지를 닫습니다.");
+                                        driver.Quit(); // 웹 드라이버 종료
+                                        break;
+                                    }
+                                    Thread.Sleep(500);
+>>>>>>> fed1283 (무한반복문 빠져나가도록)
                                 }
                                 if (currentRow.Cells[1].Value.ToString().Contains("검색:"))
                                 {
