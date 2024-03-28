@@ -208,7 +208,7 @@ namespace 쿠팡_상품_방문
             {
                 if (array[i] != "")
                 {
-                    작업데이터.Rows.Add("", array[i].Split(new string[1] { "\t" }, StringSplitOptions.None)[0], array[i].Split(new string[1] { "\t" }, StringSplitOptions.None)[1], 
+                    작업데이터.Rows.Add("", array[i].Split(new string[1] { "\t" }, StringSplitOptions.None)[0], array[i].Split(new string[1] { "\t" }, StringSplitOptions.None)[1],
                         array[i].Split(new string[1] { "\t" }, StringSplitOptions.None)[2]); //필터 가격 불러오기
                 }
             }
@@ -322,12 +322,12 @@ namespace 쿠팡_상품_방문
                             throw new Exception("Login failed");
                         }
                     }
-                    catch(Exception e)
-                    {                 
+                    catch (Exception e)
+                    {
                         Invoke(method, e.ToString());
                         continue;
                     }
-                    
+
                     for (int j = 0; j < 작업데이터.Rows.Count - 1; j++)
                     {
                         var currentRow = 작업데이터.Rows[j];
@@ -346,17 +346,24 @@ namespace 쿠팡_상품_방문
                                 Thread.Sleep((int)(1000 * lateNum));
                                 driver.ExecuteScript("arguments[0].value=arguments[1]", driver.FindElement(By.CssSelector("[id='headerSearchKeyword']")), currentRow.Cells[1].Value.ToString().Split(new string[1] { "검색:" }, StringSplitOptions.None)[1]);
                                 Thread.Sleep((int)(1000 * lateNum));
-                                driver.FindElement(By.CssSelector("[id='headerSearchBtn']")).Click();
+                                try
+                                {
+                                    driver.FindElement(By.CssSelector("[id='headerSearchBtn']")).Click();
+                                }
+                                catch (OpenQA.Selenium.WebDriverException)
+                                {
+                                    continue;
+                                }
                                 Thread.Sleep((int)(3000 * lateNum));
                                 End_Scroll(driver);
                                 if (driver.FindElements(By.CssSelector("#searchPriceFilter > div > span:nth-child(1) > input")).Count > 0)  //최소가격 필터 칸을 찾으면
-                                { 
+                                {
                                     Invoke(method, "가격 필터를 찾아 값을 입력합니다.");
                                     driver.FindElement(By.CssSelector("#searchPriceFilter > div > span:nth-child(1) > input")).SendKeys(currentRow.Cells[3].Value.ToString());
                                     Thread.Sleep(1500);
                                     driver.FindElement(By.CssSelector("#searchPriceFilter > div > span:nth-child(2) > input")).SendKeys(currentRow.Cells[3].Value.ToString());
                                     Thread.Sleep(1500);
-                                    driver.FindElement(By.CssSelector("#searchPriceFilter > div > a")).Click() ;
+                                    driver.FindElement(By.CssSelector("#searchPriceFilter > div > a")).Click();
                                 }
                                 End_Scroll(driver);
                                 for (int pageNum = 0; pageNum < 5; pageNum++) //5페이지까지 물건을 찾고 찜, 장바구니 담기 하는 반복문
@@ -364,7 +371,8 @@ namespace 쿠팡_상품_방문
                                     if (driver.FindElements(By.CssSelector($"[id='productList'] [data-product-id='{currentRow.Cells[2].Value.ToString()}']")).Count > 0)	//제품을 쿠팡 화면에서 찾는 구문
                                     {
                                         Invoke(method, "상품을 찾았습니다.");
-                                        driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "'] [class='name']")));
+                                        driver.FindElement(By.CssSelector($"[id='productList'] [data-product-id='{currentRow.Cells[2].Value.ToString()}']")).Click();
+                                        //driver.ExecuteScript("arguments[0].click()", driver.FindElement(By.CssSelector("[id='productList'] [data-product-id='" + currentRow.Cells[2].Value.ToString() + "'] [class='name']")));
                                         Thread.Sleep((int)(3000 * lateNum));
                                         driver.Close();
                                         driver.SwitchTo().Window(driver.WindowHandles.Last());
@@ -372,7 +380,7 @@ namespace 쿠팡_상품_방문
                                         {
                                             Invoke(method, "찜 클릭");
                                             driver.FindElement(By.CssSelector("button[class='prod-favorite-btn ']")).Click();
-                                            Thread.Sleep((int)(5000 * lateNum));	
+                                            Thread.Sleep((int)(5000 * lateNum));
                                         }
                                         if (driver.FindElements(By.CssSelector("button[class='prod-cart-btn']")).Count > 0)
                                         {
@@ -405,10 +413,10 @@ namespace 쿠팡_상품_방문
                                         //        Thread.Sleep(3000);
                                         //        break;
                                         //    }
- 
+
                                         //}
 
-                                        break; 
+                                        break;
                                     }
                                     //베스트셀러 상품 찾기
                                     if (driver.FindElements(By.CssSelector($"[id='productList'] [class*='search-product best-seller-carousel-item'] [data-product-id='{currentRow.Cells[2].Value.ToString()}']")).Count > 0)	//제품을 쿠팡 화면에서 찾는 구문
@@ -477,7 +485,7 @@ namespace 쿠팡_상품_방문
                                     Thread.Sleep((int)(2000 * lateNum));
                                     End_Scroll(driver);
                                 }
-                            } 
+                            }
                             else // TODO(성환): 어떤 조건에서 실행시키는지 잘 모르겠음 일단 대충봐서는 등록된 계정이 없는 경우인듯 함
                             {
                                 new Actions(driver).MoveToElement(driver.FindElement(By.CssSelector("[class^='category-btn']"))).Perform();
@@ -569,12 +577,11 @@ namespace 쿠팡_상품_방문
                                 }
                             }
                         }
-                        catch (OpenQA.Selenium.NoSuchWindowException)
+                        catch (Exception e)
                         {
-                            Invoke(method, "웹 페이지 비정상 종료");
+                            Invoke(method, "에러 발생, 다음 계정으로 넘어갑니다.");
                             Thread.Sleep(3000);
                             break;
-                            //이떄구나 시발롬
                         }
                         while (driver.WindowHandles.Count != 1)
                         {
