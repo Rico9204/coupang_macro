@@ -673,19 +673,13 @@ namespace 쿠팡_상품_방문
         private bool Login(string id, string pw)
         {
             bool result = false;
-            driver.Navigate().GoToUrl("https://coupang.com");
-            //Thread.Sleep(1000);
-            //driver.Manage().Cookies.DeleteAllCookies();
+            driver.Navigate().GoToUrl("https://front.wemakeprice.com");
             Thread.Sleep(1000);
-            driver.Navigate().GoToUrl("https://login.coupang.com/login/login.pang");
+            driver.Navigate().GoToUrl("https://front.wemakeprice.com/user/login");
             Thread.Sleep(1000);
-            //driver.Manage().Cookies.DeleteAllCookies();
-            //Thread.Sleep(1000);
-            if (driver.FindElements(By.CssSelector("[id='logout']")).Count > 0)
+            if (driver.FindElements(By.CssSelector("[id='_logOutBtn']")).Count > 0)
             {
-                driver.Navigate().GoToUrl("https://login.coupang.com/login/logout.pang");
-                Thread.Sleep(1000);
-                driver.Navigate().GoToUrl("https://login.coupang.com/login/login.pang");
+                driver.FindElement(By.CssSelector("[id='_logOutBtn']")).Click();
                 Thread.Sleep(1000);
             }
             if (driver.FindElements(By.CssSelector("[id='a.password.active")).Count > 0)
@@ -693,18 +687,18 @@ namespace 쿠팡_상품_방문
                 driver.FindElement(By.CssSelector("button[class='password active']")).Click();
                 Thread.Sleep(1000);
             }
-            driver.FindElement(By.CssSelector("[id='login-email-input']")).SendKeys(id);
+            driver.FindElement(By.CssSelector("[id=_loginId']")).SendKeys(id);
             Thread.Sleep(1000);
-            driver.FindElement(By.CssSelector("[id='login-password-input']")).SendKeys(pw);
+            driver.FindElement(By.CssSelector("[id='_loginPw']")).SendKeys(pw);
             Thread.Sleep(3000);
-            driver.FindElement(By.CssSelector("[id='login-password-input']")).SendKeys(OpenQA.Selenium.Keys.Enter);
+            driver.FindElement(By.CssSelector("[id='_loginPw']")).SendKeys(OpenQA.Selenium.Keys.Enter);
             Thread.Sleep(1000);
-            if (driver.Url != "https://www.coupang.com/")
+            if (driver.Url != "https://front.wemakeprice.com")
             {
-                driver.Navigate().GoToUrl("http://www.coupang.com/");
+                driver.Navigate().GoToUrl("https://front.wemakeprice.com");
                 Thread.Sleep(5000);
             }
-            if (driver.FindElements(By.CssSelector("[id='myCoupang']")).Count > 0)
+            if (driver.FindElements(By.CssSelector("#_toolbarContainer > li:nth-child(1) > a > strong")).Count > 0)
             {
                 result = true;
             }
