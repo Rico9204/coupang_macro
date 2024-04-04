@@ -687,7 +687,17 @@ namespace 쿠팡_상품_방문
                 driver.FindElement(By.CssSelector("button[class='password active']")).Click();
                 Thread.Sleep(1000);
             }
-            driver.FindElement(By.CssSelector("[id=_loginId']")).SendKeys(id);
+            if (driver.FindElements(By.CssSelector("[for='_chkBtnLogin'][class='chk_box on']")).Count > 0)
+            {
+                driver.FindElement(By.CssSelector("[for='_chkBtnLogin'][class='chk_box on']")).Click();
+                Thread.Sleep(500);
+            }
+            if (driver.FindElements(By.CssSelector("[for='_chkBtnSave'][class='chk_box on']")).Count > 0)
+            {
+                driver.FindElement(By.CssSelector("[for='_chkBtnSave'][class='chk_box on']")).Click();
+                Thread.Sleep(500);
+            }
+            driver.FindElement(By.CssSelector("[id='_loginId']")).SendKeys(id);
             Thread.Sleep(1000);
             driver.FindElement(By.CssSelector("[id='_loginPw']")).SendKeys(pw);
             Thread.Sleep(3000);
