@@ -328,6 +328,13 @@ namespace 쿠팡_상품_방문
                         continue;
                     }
 
+                    Thread.Sleep(1000);
+                    if (driver.FindElements(By.CssSelector("#login > a")).Count > 0)  //로그인 후 로그인이 안한 것 처럼 보이는 상황 발생 시
+                    {
+                        Invoke(method, "페이지를 새로고침 합니다");
+                        driver.Navigate().GoToUrl("https://www.coupang.com/");     //쿠팡 페이지 새로고침
+                    }
+
                     for (int j = 0; j < 작업데이터.Rows.Count - 1; j++)
                     {
                         var currentRow = 작업데이터.Rows[j];
