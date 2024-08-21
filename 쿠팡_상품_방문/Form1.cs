@@ -711,6 +711,11 @@ namespace 쿠팡_상품_방문
                 driver.Navigate().GoToUrl("http://www.coupang.com/");
                 Thread.Sleep(5000);
             }
+            if (driver.FindElements(By.CssSelector("#login > a")).Count > 0)  //로그인 후 로그인이 안한 것 처럼 보이는 상황 발생 시
+            {
+                driver.Navigate().GoToUrl("https://www.coupang.com/");     //쿠팡 페이지 새로고침
+            }
+            Thread.Sleep(1000);
             if (driver.FindElements(By.CssSelector("[id='myCoupang']")).Count > 0)
             {
                 result = true;
